@@ -1,0 +1,246 @@
+{
+  "info": {
+    "name": "RAG HR Spring",
+    "description": "HR Policy Assistant — document ingestion and RAG chat endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8282",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Document",
+      "item": [
+        {
+          "name": "Ingest PDF",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/documents/ingest",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "documents", "ingest"]
+            },
+            "description": "Reads company-leave-policy.pdf from the classpath, splits it into chunks, embeds them via OpenAI, and stores vectors in PGVector.\n\nCall this once before using the chat endpoint. Calling it multiple times will insert duplicate vectors."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "originalRequest": {
+                "method": "POST",
+                "url": {
+                  "raw": "{{baseUrl}}/api/documents/ingest",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "documents", "ingest"]
+                }
+              },
+              "body": "Successfully ingested 12 chunks from company-leave-policy.pdf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Chat",
+      "item": [
+        {
+          "name": "Ask Question",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/rag/chat",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "rag", "chat"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"How many days of annual leave do I get?\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Sends a question to the RAG pipeline. The app embeds the question, retrieves the top-4 most similar chunks from PGVector (cosine similarity, threshold 0.10), then calls gpt-4o-mini with the retrieved context.\n\nReturns the AI answer and the source chunks used to generate it."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "originalRequest": {
+                "method": "POST",
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/rag/chat",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "rag", "chat"]
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"question\": \"How many days of annual leave do I get?\"\n}"
+                }
+              },
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"answer\": \"Employees are entitled to 12 days of annual leave per year...\",\n  \"sources\": [\n    {\n      \"source\": \"company-leave-policy.pdf\",\n      \"page\": \"3\",\n      \"content\": \"Annual Leave: All permanent employees are entitled to...\"\n    }\n  ]\n}"
+            },
+            {
+              "name": "Blank question",
+              "status": "Bad Request",
+              "code": 400,
+              "originalRequest": {
+                "method": "POST",
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/rag/chat",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "rag", "chat"]
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"question\": \"\"\n}"
+                }
+              },
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Ask — Sick Leave",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/rag/chat",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "rag", "chat"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"How many sick leave days am I entitled to?\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Ask — Maternity Leave",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/rag/chat",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "rag", "chat"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"What is the maternity leave policy?\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Ask — Leave Carryover",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/rag/chat",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "rag", "chat"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"Can I carry over unused leave to next year?\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Ask — No Policy Match",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/rag/chat",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "rag", "chat"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"What is the expense reimbursement policy?\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Tests the fallback behaviour — the model should respond with 'I could not find this information in the company policy document.' since expense policy is not in the PDF."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

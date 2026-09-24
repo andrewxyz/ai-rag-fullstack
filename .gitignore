@@ -1,0 +1,36 @@
+# ===== Spring Boot / Maven =====
+rag-hr-spring/target/
+rag-hr-spring/.mvn/wrapper/maven-wrapper.jar
+rag-hr-spring/uploads/
+*.jar
+*.war
+*.ear
+
+# ===== Angular / Node =====
+rag-hr-angular/node_modules/
+rag-hr-angular/dist/
+rag-hr-angular/.angular/
+
+# ===== Environment / Secrets =====
+.env
+.env.local
+*.env
+
+# ===== Logs =====
+*.log
+logs/
+
+# ===== IDE =====
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.classpath
+.project
+.settings/
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+desktop.ini
