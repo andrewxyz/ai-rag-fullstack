@@ -164,7 +164,7 @@ No changes were made to any service or controller Java files — Spring AI's abs
 ### Step 1 — Start PostgreSQL container from WSL
 
 ```bash
-docker compose -f /mnt/c/Users/andri.mardiana/Belajar/claude/rag-hr-spring/compose.yml up -d
+docker compose -f compose.yml up -d
 ```
 
 PostgreSQL runs on port `5433`. WSL 2 automatically forwards this port to Windows `localhost`.
